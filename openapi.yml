@@ -1,0 +1,213 @@
+openapi: 3.0.3
+info:
+  title: User Management API
+  version: 1.0.0
+  description: トレーニング用に作成するAPI仕様
+servers:
+  - url: http://api.example.com/v1
+    description: API server
+paths:
+  /users:
+    post:
+      summary: ユーザー登録API
+      description: ユーザーを登録する
+      requestBody:
+        description: 登録するユーザーの情報
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+      responses:
+        '201':
+          description: 登録したユーザー情報を返却
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: 入力値が正しくない場合
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      summary: ユーザー一覧取得API
+      description: ユーザー一覧を取得する
+      responses:
+        '200':
+          description: ユーザー一覧。ユーザーが存在しない場合は空配列を返却する
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /users/{id}:
+    get:
+      summary: ユーザー情報取得API
+      description: ユーザー情報を取得する
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ユーザー情報
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      summary: ユーザー情報更新API
+      description: ユーザー情報を更新する。
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID
+          schema:
+            type: string
+      requestBody:
+        description: 更新するユーザーの情報
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUser'
+      responses:
+        '200':
+          description: 更新後のユーザー情報を返却
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: 入力値が正しくない場合
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: ユーザーが存在しない場合
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: ユーザー削除API
+      description: ユーザーを削除する
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID
+          schema:
+            type: string
+      responses:
+        '204':
+          description: ユーザー削除成功
+        '404':
+          description: ユーザーが存在しない場合
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /health:
+    get:
+      summary: ヘルスチェックAPI
+      description: 起動確認用のヘルスチェック
+      responses:
+        '200':
+          description: health check successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheckResult'
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - userName
+        - userId
+        - email
+        - createDate
+      properties:
+        id:
+          type: integer
+          example: 1
+        userName:
+          type: string
+          example: "山田 太郎"
+        userId:
+          type: string
+          example: "USER_001"
+        email:
+          type: string
+          example: "test-user@example.com"
+        createDate:
+          type: string
+          description: yyyy/mm/dd形式
+          example: 2024/05/01
+    CreateUser:
+      type: object
+      required:
+        - userName
+        - userId
+        - email
+        - createDate
+      properties:
+        userName:
+          type: string
+          example: "山田 太郎"
+        userId:
+          type: string
+          example: "USER_001"
+        email:
+          type: string
+          example: "test-user@example.com"
+        createDate:
+          type: string
+          description: yyyy/mm/dd形式
+          example: 2024/05/01
+    UpdateUser:
+      type: object
+      required:
+        - userName
+        - userId
+        - email
+      properties:
+        userName:
+          type: string
+          example: "山田 太郎"
+        userId:
+          type: string
+          example: "USER_001"
+        email:
+          type: string
+          example: "test-user@example.com"
+    HealthCheckResult:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: "api call success!!!"
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Error message"

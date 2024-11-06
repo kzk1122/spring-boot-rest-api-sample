@@ -1,0 +1,26 @@
+services:
+  database:
+    container_name: mysql_sample_db
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}"
+      - "MYSQL_USER=${DB_USER}"
+      - "MYSQL_PASSWORD=${DB_PASSWORD:?.envを見直してください}"
+      - "MYSQL_DATABASE=${DB_DATABASE}"
+      - TZ=Asia/Tokyo
+    ports:
+      - 3306:3306
+    volumes:
+      - type: volume
+        source: db-compose-volume
+        target: /var/lib/mysql
+      - type: bind
+        source: ./docker/db/init
+        target: /docker-entrypoint-initdb.d
+      - type: bind
+        source: ./docker/db/my.cnf
+        target: /etc/mysql/conf.d/my.cnf
+    image: mysql:8.2.0
+
+
+volumes:
+  db-compose-volume:
